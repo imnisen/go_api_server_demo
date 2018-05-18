@@ -26,3 +26,7 @@ bee migrate rollback [-driver=mysql] [-conn="root:@tcp(127.0.0.1:3306)/test"]
 detail refer to:
 https://beego.me/docs/install/bee.md#generate-%E5%91%BD%E4%BB%A4
 https://beego.me/docs/install/bee.md#migrate-%E5%91%BD%E4%BB%A4
+
+
+# use orm
+refer to https://beego.me/docs/mvc/model/orm.md
