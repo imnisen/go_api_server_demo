@@ -1,10 +1,12 @@
 package main
 
 import (
-"encoding/json"
-"github.com/gorilla/mux"
-"log"
-"net/http"
+	"encoding/json"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
+	"os"
 )
 
 // The person Type (more like an object)
@@ -23,6 +25,8 @@ var people []Person
 
 // Display all from the people var
 func GetPeople(w http.ResponseWriter, r *http.Request) {
+	// set content-type
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(people)
 }
 
@@ -60,6 +64,17 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+// a demo middleware
+func Middleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		//log.Println("middleware", r.URL)
+		//vars := mux.Vars(r)
+		//log.Println("vars", vars)
+		h.ServeHTTP(w, r)
+	})
+}
+
 // main function to boot up everything
 func main() {
 	router := mux.NewRouter()
@@ -69,5 +84,6 @@ func main() {
 	router.HandleFunc("/people/{id}", GetPerson).Methods("GET")
 	router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
 	router.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8000", router))
+	loggedRouter := handlers.LoggingHandler(os.Stdout, router)
+	log.Fatal(http.ListenAndServe(":8000", Middleware(loggedRouter)))
 }
